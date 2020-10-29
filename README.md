@@ -1,6 +1,8 @@
 # baseview_test_vst2
 
-Barebones baseview vst2 plugin that logs events to ~/tmp/BaseviewTest.log
+Barebones [baseview](https://github.com/RustAudio/baseview)
+[vst2](https://github.com/RustAudio/vst-rs) plugin that logs events to
+`~/tmp/BaseviewTest.log`.
 
 Currently supported platforms:
 - macOS
