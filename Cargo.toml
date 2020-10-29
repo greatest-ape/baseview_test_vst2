@@ -1,0 +1,23 @@
+[package]
+name = "baseview_test_vst2"
+version = "0.1.0"
+authors = ["Joakim Frostegård <joakim.frostegard@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "baseview_test_vst2"
+crate-type = ["cdylib"]
+
+[dependencies]
+baseview = { path = "../baseview" }
+raw-window-handle = "0.3"
+vst = "0.2"
+
+dirs = "3"
+log = "0.4"
+log-panics = "2"
+simplelog = "0.8"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.24"
+objc = "0.2"

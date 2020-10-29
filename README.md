@@ -1,0 +1,1 @@
+Barebones baseview vst2 plugin that logs events to ~/tmp/BaseviewTest.log
