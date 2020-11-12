@@ -166,5 +166,17 @@ fn raw_window_handle_from_parent(
     })
 }
 
+#[cfg(target_os = "windows")]
+fn raw_window_handle_from_parent(
+    parent: *mut ::std::ffi::c_void
+) -> RawWindowHandle {
+    use raw_window_handle::windows::WindowsHandle;
+
+    RawWindowHandle::Windows(WindowsHandle {
+        hwnd: parent,
+        ..WindowsHandle::empty()
+    })
+}
+
 
 plugin_main!(TestPlugin);
