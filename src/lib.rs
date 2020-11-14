@@ -166,6 +166,7 @@ fn raw_window_handle_from_parent(
     })
 }
 
+
 #[cfg(target_os = "windows")]
 fn raw_window_handle_from_parent(
     parent: *mut ::std::ffi::c_void
@@ -175,6 +176,20 @@ fn raw_window_handle_from_parent(
     RawWindowHandle::Windows(WindowsHandle {
         hwnd: parent,
         ..WindowsHandle::empty()
+    })
+}
+
+
+
+#[cfg(target_os = "linux")]
+fn raw_window_handle_from_parent(
+    parent: *mut ::std::ffi::c_void
+) -> RawWindowHandle {
+    use raw_window_handle::unix::XcbHandle;
+
+    RawWindowHandle::Xcb(XcbHandle {
+        window: parent as u32,
+        ..XcbHandle::empty()
     })
 }
 

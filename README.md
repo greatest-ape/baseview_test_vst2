@@ -16,3 +16,10 @@ Barebones [baseview](https://github.com/RustAudio/baseview)
 - Run `cargo build`
 - Copy `target/debug/libbaseview_test_vst2.dll` to your VST plugin folder
 - Start your DAW, test the plugin
+
+## Usage: Linux
+
+- Make sure baseview repo is in ../baseview
+- Run `cargo build`
+- Copy `target/debug/libbaseview_test_vst2.so` to your VST plugin folder
+- Start your DAW, test the plugin
