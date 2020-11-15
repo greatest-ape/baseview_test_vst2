@@ -1,4 +1,4 @@
-/// Barebones baseview vst2 plugin that logs events to ~/tmp/BaseviewTest.log
+//! Barebones baseview vst2 plugin that logs events to ~/tmp/BaseviewTest.log
 
 #[macro_use]
 extern crate vst;
@@ -16,14 +16,8 @@ const WINDOW_WIDTH: usize = 500;
 const WINDOW_HEIGHT: usize = 500;
 
 
+#[derive(Default)]
 struct TestWindowHandler;
-
-
-impl Default for TestWindowHandler {
-    fn default() -> Self {
-        Self
-    }
-}
 
 
 impl WindowHandler for TestWindowHandler {
@@ -62,7 +56,7 @@ impl Editor for TestPluginEditor {
         let parent = raw_window_handle_from_parent(parent);
 
         let options = WindowOpenOptions {
-            title: "Baseview Test".to_string(),
+            title: "BaseviewTest".to_string(),
             size: Size::new(WINDOW_WIDTH as f64, WINDOW_HEIGHT as f64),
             scale: WindowScalePolicy::ScaleFactor(1.0),
             parent: Parent::WithParent(parent),
@@ -85,7 +79,6 @@ impl Editor for TestPluginEditor {
 }
 
 
-
 struct TestPlugin {
     editor: Option<TestPluginEditor>,
 }
@@ -103,7 +96,7 @@ impl Default for TestPlugin {
 impl Plugin for TestPlugin {
     fn get_info(&self) -> Info {
         Info {
-            name: "Basic Plugin".to_string(),
+            name: "BaseviewTest".to_string(),
             unique_id: 53435,
 
             ..Default::default()
@@ -133,7 +126,6 @@ impl Plugin for TestPlugin {
 
         ::log::info!("init");
     }   
-
 
     fn get_editor(&mut self) -> Option<Box<dyn Editor>> {
         if let Some(editor) = self.editor.take(){
@@ -178,7 +170,6 @@ fn raw_window_handle_from_parent(
         ..WindowsHandle::empty()
     })
 }
-
 
 
 #[cfg(target_os = "linux")]
