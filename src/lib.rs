@@ -142,18 +142,9 @@ fn raw_window_handle_from_parent(
     parent: *mut ::std::ffi::c_void
 ) -> RawWindowHandle {
     use raw_window_handle::macos::MacOSHandle;
-    use cocoa::base::id;
-    use objc::{msg_send, sel, sel_impl};
-
-    let ns_view = parent as id;
-
-    let ns_window: id = unsafe {
-        msg_send![ns_view, window]
-    };
 
     RawWindowHandle::MacOS(MacOSHandle {
-        ns_window: ns_window as *mut ::std::ffi::c_void,
-        ns_view: ns_view as *mut ::std::ffi::c_void,
+        ns_view: parent as *mut ::std::ffi::c_void,
         ..MacOSHandle::empty()
     })
 }
