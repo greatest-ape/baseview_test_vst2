@@ -53,6 +53,10 @@ impl Editor for TestPluginEditor {
     }
 
     fn open(&mut self, parent: *mut ::std::ffi::c_void) -> bool {
+        if self.is_open(){
+            return false;
+        }
+
         let parent = raw_window_handle_from_parent(parent);
 
         let options = WindowOpenOptions {
