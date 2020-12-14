@@ -4,10 +4,10 @@
 extern crate vst;
 
 use baseview::{
-    Size, Event, Parent, Window, WindowHandler, WindowOpenOptions,
+    Size, Event, Window, WindowHandler, WindowOpenOptions,
     WindowScalePolicy
 };
-use raw_window_handle::RawWindowHandle;
+use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
 use vst::plugin::{Info, Plugin};
 use vst::editor::Editor;
 
@@ -53,16 +53,15 @@ impl Editor for TestPluginEditor {
             return false;
         }
 
-        let parent = raw_window_handle_from_parent(parent);
+        self.is_open = true;
 
         let options = WindowOpenOptions {
             title: PLUGIN_NAME.to_string(),
             size: Size::new(WINDOW_WIDTH as f64, WINDOW_HEIGHT as f64),
             scale: WindowScalePolicy::SystemScaleFactor,
-            parent: Parent::WithParent(parent),
         };
 
-        Window::open(options, |_|{
+        Window::open_parented(&VstParent(parent), options, |_|{
             TestWindowHandler::default()
         });
 
@@ -142,42 +141,45 @@ fn init_logging(){
 }
 
 
-#[cfg(target_os = "macos")]
-fn raw_window_handle_from_parent(
-    parent: *mut ::std::ffi::c_void
-) -> RawWindowHandle {
-    use raw_window_handle::macos::MacOSHandle;
+struct VstParent(*mut ::std::ffi::c_void);
 
-    RawWindowHandle::MacOS(MacOSHandle {
-        ns_view: parent,
-        ..MacOSHandle::empty()
-    })
+
+#[cfg(target_os = "macos")]
+unsafe impl HasRawWindowHandle for VstParent {
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        use raw_window_handle::macos::MacOSHandle;
+
+        RawWindowHandle::MacOS(MacOSHandle {
+            ns_view: self.0 as *mut ::std::ffi::c_void,
+            ..MacOSHandle::empty()
+        })
+    }
 }
 
 
 #[cfg(target_os = "windows")]
-fn raw_window_handle_from_parent(
-    parent: *mut ::std::ffi::c_void
-) -> RawWindowHandle {
-    use raw_window_handle::windows::WindowsHandle;
+unsafe impl HasRawWindowHandle for VstParent {
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        use raw_window_handle::windows::WindowsHandle;
 
-    RawWindowHandle::Windows(WindowsHandle {
-        hwnd: parent,
-        ..WindowsHandle::empty()
-    })
+        RawWindowHandle::Windows(WindowsHandle {
+            hwnd: self.0,
+            ..WindowsHandle::empty()
+        })
+    }
 }
 
 
 #[cfg(target_os = "linux")]
-fn raw_window_handle_from_parent(
-    parent: *mut ::std::ffi::c_void
-) -> RawWindowHandle {
-    use raw_window_handle::unix::XcbHandle;
+unsafe impl HasRawWindowHandle for VstParent {
+    fn raw_window_handle(&self) -> RawWindowHandle {
+        use raw_window_handle::unix::XcbHandle;
 
-    RawWindowHandle::Xcb(XcbHandle {
-        window: parent as u32,
-        ..XcbHandle::empty()
-    })
+        RawWindowHandle::Xcb(XcbHandle {
+            window: self.0 as u32,
+            ..XcbHandle::empty()
+        })
+    }
 }
 
 
