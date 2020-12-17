@@ -4,8 +4,8 @@
 extern crate vst;
 
 use baseview::{
-    Size, Event, Parent, Window, WindowHandle, WindowHandler,
-    WindowOpenOptions, WindowScalePolicy
+    Size, Event, Parent, Window, WindowHandler, WindowOpenOptions,
+    WindowScalePolicy
 };
 use raw_window_handle::RawWindowHandle;
 use vst::plugin::{Info, Plugin};
@@ -21,12 +21,6 @@ struct TestWindowHandler;
 
 
 impl WindowHandler for TestWindowHandler {
-    type Message = ();
-
-    fn on_message(&mut self, _: &mut Window, message: Self::Message) {
-        ::log::info!("TestWindowHandler received message: {:?}", message)
-    }
-
     fn on_event(&mut self, _: &mut Window, event: Event) {
         ::log::info!("TestWindowHandler received event: {:?}", event)
     }
@@ -39,7 +33,7 @@ impl WindowHandler for TestWindowHandler {
 
 #[derive(Default)]
 struct TestPluginEditor {
-    handle: Option<WindowHandle>,
+    is_open: bool,
 }
 
 
@@ -53,7 +47,7 @@ impl Editor for TestPluginEditor {
     }
 
     fn open(&mut self, parent: *mut ::std::ffi::c_void) -> bool {
-        if self.is_open(){
+        if self.is_open {
             return false;
         }
 
@@ -66,19 +60,19 @@ impl Editor for TestPluginEditor {
             parent: Parent::WithParent(parent),
         };
 
-        self.handle = Some(Window::open(options, |_|{
+        Window::open(options, |_|{
             TestWindowHandler::default()
-        }));
+        });
 
         true
     }
 
     fn is_open(&mut self) -> bool {
-        self.handle.is_some()
+        self.is_open
     }
 
     fn close(&mut self) {
-        self.handle = None;
+        self.is_open = false;
     }
 }
 
