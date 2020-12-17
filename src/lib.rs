@@ -144,7 +144,7 @@ fn raw_window_handle_from_parent(
     use raw_window_handle::macos::MacOSHandle;
 
     RawWindowHandle::MacOS(MacOSHandle {
-        ns_view: parent as *mut ::std::ffi::c_void,
+        ns_view: parent,
         ..MacOSHandle::empty()
     })
 }
