@@ -58,7 +58,7 @@ impl Editor for TestPluginEditor {
         let options = WindowOpenOptions {
             title: PLUGIN_NAME.to_string(),
             size: Size::new(WINDOW_WIDTH as f64, WINDOW_HEIGHT as f64),
-            scale: WindowScalePolicy::ScaleFactor(1.0),
+            scale: WindowScalePolicy::SystemScaleFactor,
             parent: Parent::WithParent(parent),
         };
 
