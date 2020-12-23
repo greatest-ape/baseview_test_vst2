@@ -3,36 +3,42 @@
 #[macro_use]
 extern crate vst;
 
+use std::time::Duration;
+
 use baseview::{
-    AppRunner, Event, Parent, Size, Window, WindowHandle, WindowHandler, WindowOpenOptions,
-    WindowScalePolicy,
+    AppRunner, Event, Parent, Size, Window, WindowHandler, WindowOpenOptions, WindowScalePolicy,
 };
 use raw_window_handle::RawWindowHandle;
 use vst::editor::Editor;
 use vst::plugin::{Info, Plugin};
 
+use rtrb::{Consumer, RingBuffer};
+
 const WINDOW_WIDTH: usize = 500;
 const WINDOW_HEIGHT: usize = 500;
+#[derive(Debug)]
+enum Message {
+    Hello,
+}
 
-#[derive(Default)]
-struct TestWindowHandler;
+struct TestWindowHandler {
+    rx: Consumer<Message>,
+}
 
 impl WindowHandler for TestWindowHandler {
-    type Message = ();
-
-    fn on_message(&mut self, _: &mut Window, message: Self::Message) {
-        ::log::info!("TestWindowHandler received message: {:?}", message)
+    fn on_frame(&mut self) {
+        while let Ok(message) = self.rx.pop() {
+            ::log::info!("TestWindowHandler received message: {:?}", message);
+        }
     }
 
     fn on_event(&mut self, _: &mut Window, event: Event) {
         ::log::info!("TestWindowHandler received event: {:?}", event)
     }
-
-    fn on_frame(&mut self) {}
 }
 
 struct TestPluginEditor {
-    handle: Option<(WindowHandle<TestWindowHandler>, Option<AppRunner>)>,
+    handle: Option<AppRunner>,
 }
 
 impl Editor for TestPluginEditor {
@@ -58,7 +64,17 @@ impl Editor for TestPluginEditor {
             parent: Parent::WithParent(parent),
         };
 
-        self.handle = Some(Window::open(options, |_| TestWindowHandler::default()));
+        let (mut tx, rx) = RingBuffer::new(128).split();
+
+        self.handle = Window::open(options, |_| TestWindowHandler { rx });
+
+        ::std::thread::spawn(move || loop {
+            ::std::thread::sleep(Duration::from_secs(5));
+
+            if let Err(_) = tx.push(Message::Hello) {
+                println!("Failed sending message");
+            }
+        });
 
         true
     }
