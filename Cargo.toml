@@ -10,7 +10,7 @@ name = "baseview_test_vst2"
 crate-type = ["cdylib"]
 
 [dependencies]
-baseview = { path = "../baseview" }
+baseview = {git = "https://github.com/RustAudio/baseview"}
 dirs = "3"
 log = "0.4"
 log-panics = "2"
