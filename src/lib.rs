@@ -27,7 +27,7 @@ impl WindowHandler for TestWindowHandler {
         ::log::info!("TestWindowHandler received event: {:?}", event)
     }
 
-    fn on_frame(&mut self) {
+    fn on_frame(&mut self, _window: &mut Window) {
         
     }
 }
