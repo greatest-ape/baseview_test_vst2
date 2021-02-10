@@ -4,7 +4,7 @@
 extern crate vst;
 
 use baseview::{
-    Size, Event, Window, WindowHandler, WindowOpenOptions,
+    Size, Event, EventStatus, Window, WindowHandler, WindowOpenOptions,
     WindowScalePolicy
 };
 use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
@@ -23,8 +23,10 @@ struct TestWindowHandler;
 
 
 impl WindowHandler for TestWindowHandler {
-    fn on_event(&mut self, _: &mut Window, event: Event) {
-        ::log::info!("TestWindowHandler received event: {:?}", event)
+    fn on_event(&mut self, _: &mut Window, event: Event) -> EventStatus {
+        ::log::info!("TestWindowHandler received event: {:?}", event);
+
+        EventStatus::Captured
     }
 
     fn on_frame(&mut self, _window: &mut Window) {
